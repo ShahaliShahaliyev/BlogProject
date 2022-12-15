@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.db.models import Q 
-from .models import Category, Post, Author
+from .models import Category, Info, Post, Author
 
 def get_author(user):
     qs = Author.objects.filter(user=user)
@@ -27,6 +27,14 @@ def post (request,slug):
         'latest': latest,
     }
     return render(request, 'post.html', context)
+
+def info (request):
+    about = Info.objects.get()
+    context = {
+        'about':about
+    }
+    return render(request, 'user.html',context)
+    
 
 def about (request):
     return render(request, 'about_page.html')

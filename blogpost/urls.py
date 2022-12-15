@@ -3,12 +3,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path
 
-from posts.views import homepage, post, about, search, postlist, allposts
+from posts.views import homepage, info, post, about, search, postlist, allposts
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', homepage, name = 'homepage'),
     path('post/<slug>/', post, name = 'post'),
+    path('info/', info, name = 'info'),
     path('about/', about,name = 'about' ),
     path('search/', search, name = 'search'),
     path('postlist/<slug>/', postlist, name = 'postlist'), 
