@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Q 
-from .models import Category, Info, Post, Author
+from .models import Category, Info, Post, Author,IpModel
+from django.views.generic import DetailView
 
 def get_author(user):
     qs = Author.objects.filter(user=user)
@@ -70,3 +71,36 @@ def allposts(request):
         'posts': posts,
     }
     return render(request, 'all_posts.html', context)
+
+def get_client_ip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+        
+    return ip
+
+
+class PostDetailViews(DetailView):
+    model = Post
+    context_object_name = 'post'
+    template_name = 'post.html'
+    
+    def get(self,request,*args,**kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        ip = get_client_ip(self.request)
+        print(ip)
+        if IpModel.object.filter(ip=ip).exists():
+            print("ip already present")
+            post_id = request.GET.get('post-id')
+            print(post_id)
+            post = Post.objects.get(pk=post_id)
+            post.views.add(IpModel.objects.get(ip=ip))
+        else:
+            IpModel.objects.create(ip=ip)
+            post_id = request.GET.get('post_id')    
+            post = Post.objects.get(pk=post_id)
+            post.views.add(IpModel.objects.get(ip=ip))    
+        return self.render_to_response(context)

@@ -20,6 +20,12 @@ class Category(models.Model):
         return self.title
 
 
+class IpModel(models.Model):
+    ip = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.ip
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     slug = models.SlugField()
@@ -30,9 +36,13 @@ class Post(models.Model):
     thumbnail = models.ImageField()
     categories = models.ManyToManyField(Category)
     featured = models.BooleanField()
+    views = models.ManyToManyField(IpModel,related_name="post_views",blank=True)
 
     def __str__(self):
         return self.title
+    
+    def total_views(self):
+        return self.views.count()
     
 class Info(models.Model):
     name = models.CharField(max_length=20)
@@ -42,3 +52,4 @@ class Info(models.Model):
     
     def __str__(self):
         return self.name
+
